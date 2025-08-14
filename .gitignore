@@ -159,5 +159,12 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+#Audios
+*.mp3
+*.m4a
+*.wav
+*.flac
+*.ogg
 
-.mp3
+#Text files
+*.txt
