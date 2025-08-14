@@ -9,7 +9,7 @@ def diccionario_audios(ruta_carpeta: str) -> dict:
 
     diccionario = {}
     for num, nombre_archivo in enumerate(os.listdir(ruta_carpeta), 1):
-        if nombre_archivo.endswith((".mp3", ".m4a", ".wav", ".flac", ".ogg")):
+        if nombre_archivo.endswith((".mp3", ".m4a", ".wav", ".flac", ".aac", ".ogg", ".wma", ".alac")):
             ruta_completa = os.path.join(ruta_carpeta, nombre_archivo)
             try:
                 tamaño_archivo = os.path.getsize(ruta_completa)
@@ -18,22 +18,32 @@ def diccionario_audios(ruta_carpeta: str) -> dict:
                 print(f"Error al obtener el tamaño de '{nombre_archivo}': {e}")
     return diccionario
 
-def getfile(audios: str = 'audios') -> str:
+def getfiles(audios: str = 'audios') -> list:
     diccionario = diccionario_audios(audios)
     if not diccionario:
         print("No se encontraron archivos de audio en la carpeta especificada.")
-        return None
+        return []
 
     while True:
         try:
             print("\nArchivos disponibles:")
             for clave, valor in diccionario.items():
                 print(f"{clave}) {valor[0]} - Tamaño: {valor[1] / (1024 * 1024):.2f} MB")
-            opcion = input("\nSeleccione el número del archivo que desea transcribir: ")
-            if opcion in diccionario:
-                return os.path.join(audios, diccionario[opcion][0])
+
+            opcion = input("\nSeleccione los números de los archivos separados por coma (ej: 1,3,5): ")
+            seleccionados = opcion.replace(" ", "").split(",")
+
+            archivos = []
+            for num in seleccionados:
+                if num in diccionario:
+                    archivos.append(os.path.join(audios, diccionario[num][0]))
+                else:
+                    print(f"Opción '{num}' no válida. Ignorada.")
+
+            if archivos:
+                return archivos
             else:
-                print("Opción no válida. Por favor, intente nuevamente.")
+                print("No se seleccionó ningún archivo válido. Intente nuevamente.")
         except Exception as e:
             print(f"Error: {e}. Intente nuevamente.")
 
@@ -61,30 +71,34 @@ def ejecutar_opcion(opcion: str, opciones: dict):
     if modelo_seleccionado == 'salir':
         return
 
-    audio_file = getfile()
-    if not audio_file:
+    audio_files = getfiles()
+    if not audio_files:
         return
 
-    if not os.path.isfile(audio_file):
-        print(f"Error: El archivo '{audio_file}' no existe.")
-        return
-
-    print(f"\nTranscribiendo el archivo: {os.path.basename(audio_file)} con el modelo {modelo_seleccionado}...\n")
+    plural = '(s)' if len(audio_files) > 1 else ''
+    print(f"\nTranscribiendo {len(audio_files)} archivo{plural} con el modelo {modelo_seleccionado}...\n")
 
     try:
         model = whisper.load_model(modelo_seleccionado)
 
-        start_time = time.time() # Iniciar el contador de tiempo
-        result = model.transcribe(audio_file, verbose=False) # verbose=False para menos salida en consola
-        end_time = time.time() # Finalizar el contador de tiempo
+        for audio_file in audio_files:
+            if not os.path.isfile(audio_file):
+                print(f"Error: El archivo '{audio_file}' no existe.")
+                continue
 
-        transcription_time = end_time - start_time
-        print(f"\n¡Transcripción completada en {transcription_time:.2f} segundos! 🎉")
+            print(f"\nTranscribiendo: {os.path.basename(audio_file)}")
 
-        output_filename = os.path.basename(audio_file).rsplit('.', 1)[0] + '.txt'
-        with open(output_filename, 'w', encoding="utf8") as f:
-            f.writelines(result["text"])
-        print(f"El texto transcribido se ha guardado en '{output_filename}'.")
+            start_time = time.time()
+            result = model.transcribe(audio_file, verbose=False)
+            end_time = time.time()
+
+            transcription_time = end_time - start_time
+            print(f"✔ Transcripción completada en {transcription_time:.2f} segundos.")
+
+            output_filename = os.path.basename(audio_file).rsplit('.', 1)[0] + '.txt'
+            with open(output_filename, 'w', encoding="utf8") as f:
+                f.writelines(result["text"])
+            print(f"📝 Guardado en '{output_filename}'.")
 
     except Exception as e:
         print(f"Error durante la transcripción: {e}")
@@ -97,7 +111,6 @@ def generar_menu(opciones: dict):
         ejecutar_opcion(opcion, opciones)
 
 def run():
-    """Define las opciones del menú principal y ejecuta el programa."""
     opciones = {
         '1': 'tiny',
         '2': 'base',
