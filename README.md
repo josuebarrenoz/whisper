@@ -1,16 +1,31 @@
-# whisper
+# Whisper
 
-Scripts con Whisper para transcribir texto
+Este proyecto utiliza [Whisper](https://github.com/openai/whisper) para transcribir audios automáticamente.
 
-## Crea tu entorno virtual
+## Requisitos
 
-    python3 -m venv .venv
+- **Python 3.8+**
+- **ffmpeg** instalado en tu sistema ([descargar ffmpeg](https://ffmpeg.org/download.html))
+- Entorno virtual recomendado
 
-## Activalo
+## Instalación
 
-    source /.venv/bin/activate
+1. **Instala ffmpeg**
 
-## instala librerias
+   - Windows: Descarga el ejecutable desde [ffmpeg.org](https://ffmpeg.org/download.html) y agrega la carpeta `bin` al PATH.
+   - Linux/Mac:  
+     ```sh
+     sudo apt install ffmpeg
+     # o
+     brew install ffmpeg
+     ```
 
-    pip install -r requirements.txt
+2. **Crea y activa un entorno virtual**
 
+   ```sh
+   python -m venv .venv
+   # Windows
+   .venv\Scripts\activate
+   # Linux/Mac
+   source .venv/bin/activate
+   ```
