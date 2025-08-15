@@ -71,7 +71,7 @@ def run():
     menu_principal()
     model = whisper.load_model(base)
     #result = model.transcribe(ruta)
-    result = model.transcribe("C:\Users\Zapat\Repositorios\whisper\TRINIDAD.mp3")
+    result = model.transcribe("TRINIDAD.mp3")
     with open(r'Resultados.txt', 'w', encoding="utf8") as f:
         f.writelines(result["text"])
     print("La tarea se realizo exitosamente")
