@@ -1,2 +1,0 @@
-Detected language: es
-¡Ao!

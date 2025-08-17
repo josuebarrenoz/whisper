@@ -96,6 +96,7 @@ def ejecutar_opcion(opcion: str, opciones: dict):
             print(f"✔ Transcripción completada en {transcription_time:.2f} segundos.")
 
             output_filename = os.path.basename(audio_file).rsplit('.', 1)[0] + '.txt'
+            output_filename = os.path.join("txt", output_filename)
             with open(output_filename, 'w', encoding="utf8") as f:
                 f.writelines(result["text"])
             print(f"📝 Guardado en '{output_filename}'.")

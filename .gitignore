@@ -168,3 +168,4 @@ cython_debug/
 
 #Text files
 *.txt
+!requirements.txt
